@@ -121,10 +121,10 @@ class CopyState extends funkin.backend.MusicBeatState
 				if (failedFiles.length > 0)
 				{
 					NativeAPI.showMessageBox('Failed To Copy ${failedFiles.length} File.', failedFiles.join('\n'), MSG_ERROR);
-					final folder:String = #if android StorageUtil.getExternalStorageDirectory() + #else Sys.getCwd() + #end 'logs/';
-					if (!FileSystem.exists(folder))
-						FileSystem.createDirectory(folder);
-					File.saveContent(folder + Date.now().toString().replace(' ', '-').replace(':', "'") + '-CopyState' + '.txt', failedFilesStack.join('\n'));
+					final folder:String = #if android StorageUtil.getStorageDirectory() + #else Sys.getCwd() + #end 'logs/';
+					if (!FileSystem.exists(SUtil.getStorageDirectory(folder))
+						FileSystem.createDirectory(SUtil.getStorageDirectory(folder);
+					File.saveContent(SUtil.getStorageDirectory(folder + Date.now().toString().replace(' ', '-').replace(':', "'") + '-CopyState' + '.txt', failedFilesStack.join('\n'));
 				}
 				
 				FlxG.sound.play(Paths.sound('menu/confirm')).onComplete = () ->
@@ -150,8 +150,8 @@ class CopyState extends funkin.backend.MusicBeatState
 		if (!FileSystem.exists(file))
 		{
 			var directory = Path.directory(file);
-			if (!FileSystem.exists(directory))
-				FileSystem.createDirectory(directory);
+			if (!FileSystem.exists(SUtil.getStorageDirectory(directory)))
+				FileSystem.createDirectory(SUtil.getStorageDirectory(directory));
 			try
 			{
 				if (OpenFLAssets.exists(getFile(file)))
@@ -163,7 +163,7 @@ class CopyState extends funkin.backend.MusicBeatState
 						var path:String = '';
 						#if android
 						if (file.startsWith('mods/'))
-							path = StorageUtil.getExternalStorageDirectory() + file;
+							path = StorageUtil.getStorageDirectory() + file;
 						else
 						#end
 							path = file;
@@ -190,16 +190,16 @@ class CopyState extends funkin.backend.MusicBeatState
 		var directory = Path.directory(file);
 		#if android
 		if (fileName.startsWith('mods/'))
-			directory = StorageUtil.getExternalStorageDirectory() + directory;
+			directory = StorageUtil.getStorageDirectory() + directory;
 		#end
 		try
 		{
 			var fileData:String = OpenFLAssets.getText(getFile(file));
 			if (fileData == null)
 				fileData = '';
-			if (!FileSystem.exists(directory))
-				FileSystem.createDirectory(directory);
-			File.saveContent(Path.join([directory, fileName]), fileData);
+			if (!FileSystem.exists(SUtil.getStorageDirectory(directory)))
+				FileSystem.createDirectory(SUtil.getStorageDirectory(directory));
+			File.saveContent(SUtil.getStorageDirectory(Path.join([directory, fileName]))s, fileData);
 		}
 		catch (e:haxe.Exception)
 		{
@@ -246,7 +246,7 @@ class CopyState extends funkin.backend.MusicBeatState
 		#if android
 		for (file in locatedFiles)
 			if (file.startsWith('mods/'))
-				locatedFiles = locatedFiles.filter(file -> !FileSystem.exists(StorageUtil.getExternalStorageDirectory() + file));
+				locatedFiles = locatedFiles.filter(file -> !FileSystem.exists(StorageUtil.getStorageDirectory() + file));
 		#end
 
 		var filesToRemove:Array<String> = [];

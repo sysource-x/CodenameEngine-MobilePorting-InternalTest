@@ -181,8 +181,8 @@ class CoolUtil
 
 		for (folder in folders) {
 			currentPath += folder + "/";
-			if (!FileSystem.exists(currentPath))
-				FileSystem.createDirectory(currentPath);
+			if (!FileSystem.exists(SUtil.getStorageDirectory(currentPath)))
+				FileSystem.createDirectory(SUtil.getStorageDirectory(currentPath));
 		}
 		#end
 		return path;

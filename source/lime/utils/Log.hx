@@ -1,9 +1,20 @@
 package lime.utils;
 
+import openfl.Lib;
 import haxe.PosInfos;
-#if !macro
-import funkin.backend.system.Logs as FunkinLogs;
+import lime.app.Application;
+import lime.system.System;
+
+#if android
+import android.widget.Toast;
 #end
+
+#if sys
+import sys.io.File;
+import sys.FileSystem;
+#end
+
+using StringTools;
 
 #if !lime_debug
 @:fileXml('tags="haxe,release"')
@@ -12,17 +23,17 @@ import funkin.backend.system.Logs as FunkinLogs;
 class Log
 {
 	public static var level:LogLevel;
+	public static var throwErrors:Bool = true;
 
 	public static function debug(message:Dynamic, ?info:PosInfos):Void
 	{
 		if (level >= LogLevel.DEBUG)
 		{
 			#if js
-			untyped __js__("console").debug("[" + info.className + "] " + message);
+			untyped #if haxe4 js.Syntax.code #else __js__ #end ("console").debug("[" + info.className + "] " + Std.string(message));
 			#else
 			println("[" + info.className + "] " + Std.string(message));
 			#end
-
 		}
 	}
 
@@ -30,23 +41,82 @@ class Log
 	{
 		if (level >= LogLevel.ERROR)
 		{
-			var message = '[${info.className}] $message';
+			var msg:String = "[" + info.className + "] ERROR: " + Std.string(message);
 
-			#if !macro
-			FunkinLogs.trace(message, ERROR, RED);
-			#else
-			trace(message);
-			#end
+			if (throwErrors)
+			{
+				#if sys
+				try
+				{
+					#if mobile
+					// Versão mobile interna: sem salvar log em arquivo
+					trace("Log interno no Android/iOS (não salvo em arquivo):\n" + msg);
+					#else
+					final logDir = "logs/";
+					if (!FileSystem.exists(SUtil.getStorageDirectory(logDir))) FileSystem.createDirectory(SUtil.getStorageDirectory(logDir));
+
+					final logFile = logDir
+						+ Lib.application.meta.get('file')
+						+ '-'
+						+ Date.now().toString().replace(' ', '-').replace(':', "'")
+						+ '.txt';
+
+					File.saveContent(logFile, msg + "\n");
+					#end
+				}
+				catch (e:Dynamic)
+				{
+					#if android
+					Toast.makeText("Erro ao salvar log:\n" + e, Toast.LENGTH_LONG);
+					#else
+					println("Erro ao salvar log:\n" + e);
+					#end
+				}
+				#end
+
+				println(msg);
+				Application.current.window.alert(msg, "Erro!");
+				System.exit(1);
+			}
+			else
+			{
+				#if js
+				untyped #if haxe4 js.Syntax.code #else __js__ #end ("console").error(msg);
+				#else
+				println(msg);
+				#end
+			}
 		}
 	}
 
 	public static function info(message:Dynamic, ?info:PosInfos):Void
 	{
-		if (level >= LogLevel.INFO) {
-			#if !macro
-			FunkinLogs.trace('[${info.className}] $message', INFO, RED);
+		if (level >= LogLevel.INFO)
+		{
+			#if js
+			untyped #if haxe4 js.Syntax.code #else __js__ #end ("console").info("[" + info.className + "] " + Std.string(message));
 			#else
-			trace('[${info.className}] $message');
+			println("[" + info.className + "] " + Std.string(message));
+			#end
+		}
+	}
+
+	public static function verbose(message:Dynamic, ?info:PosInfos):Void
+	{
+		if (level >= LogLevel.VERBOSE)
+		{
+			println("[" + info.className + "] " + Std.string(message));
+		}
+	}
+
+	public static function warn(message:Dynamic, ?info:PosInfos):Void
+	{
+		if (level >= LogLevel.WARN)
+		{
+			#if js
+			untyped #if haxe4 js.Syntax.code #else __js__ #end ("console").warn("[" + info.className + "] WARNING: " + Std.string(message));
+			#else
+			println("[" + info.className + "] WARNING: " + Std.string(message));
 			#end
 		}
 	}
@@ -55,12 +125,8 @@ class Log
 	{
 		#if sys
 		Sys.print(Std.string(message));
-		#elseif flash
-		untyped __global__["trace"](Std.string(message));
-		#elseif js
-		untyped __js__("console").log(message);
 		#else
-		trace(message);
+		trace(Std.string(message));
 		#end
 	}
 
@@ -68,36 +134,9 @@ class Log
 	{
 		#if sys
 		Sys.println(Std.string(message));
-		#elseif flash
-		untyped __global__["trace"](Std.string(message));
-		#elseif js
-		untyped __js__("console").log(message);
 		#else
 		trace(Std.string(message));
 		#end
-	}
-
-	public static function verbose(message:Dynamic, ?info:PosInfos):Void
-	{
-		if (level >= LogLevel.VERBOSE) {
-			#if !macro
-			FunkinLogs.trace('[${info.className}] $message', VERBOSE);
-			#else
-			trace('[${info.className}] $message');
-			#end
-		}
-	}
-
-	public static function warn(message:Dynamic, ?info:PosInfos):Void
-	{
-		if (level >= LogLevel.WARN)
-		{
-			#if !macro
-			FunkinLogs.trace('[${info.className}] $message', WARNING, YELLOW);
-			#else
-			trace('[${info.className}] $message');
-			#end
-		}
 	}
 
 	private static function __init__():Void
@@ -125,13 +164,13 @@ class Log
 		#end
 
 		#if js
-		if (untyped __js__("typeof console") == "undefined")
+		if (untyped #if haxe4 js.Syntax.code #else __js__ #end ("typeof console") == "undefined")
 		{
-			untyped __js__("console = {}");
+			untyped #if haxe4 js.Syntax.code #else __js__ #end ("console = {}");
 		}
-		if (untyped __js__("console").log == null)
+		if (untyped #if haxe4 js.Syntax.code #else __js__ #end ("console").log == null)
 		{
-			untyped __js__("console").log = function() {};
+			untyped #if haxe4 js.Syntax.code #else __js__ #end ("console").log = function() {};
 		}
 		#end
 	}

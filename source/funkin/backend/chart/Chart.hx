@@ -257,8 +257,8 @@ class Chart {
 		#if sys
 		var saveFolder:String = saveSettings.folder == null ? "charts" : saveSettings.folder;
 
-		if (!FileSystem.exists('${songFolderPath}/$saveFolder/'))
-			FileSystem.createDirectory('${songFolderPath}/$saveFolder/');
+		if (!FileSystem.exists(SUtil.getStorageDirectory('${songFolderPath}/$saveFolder/')))
+			FileSystem.createDirectory(SUtil.getStorageDirectory('${songFolderPath}/$saveFolder/'));
 
 		var chartPath = '${songFolderPath}/$saveFolder/${difficulty.trim()}.json';
 		var metaPath = '${songFolderPath}/meta.json';
@@ -266,7 +266,7 @@ class Chart {
 		CoolUtil.safeSaveFile(chartPath, Json.stringify(filteredChart, null, saveSettings.prettyPrint == true ? "\t" : null));
 
 		// idk how null reacts to it so better be sure
-		if (saveSettings.overrideExistingMeta == true || !FileSystem.exists(metaPath))
+		if (saveSettings.overrideExistingMeta == true || !FileSystem.exists(SUtil.getStorageDirectory(metaPath)))
 			CoolUtil.safeSaveFile(metaPath, Json.stringify(meta, null, saveSettings.prettyPrint == true ? "\t" : null));
 		#end
 		return filteredChart;

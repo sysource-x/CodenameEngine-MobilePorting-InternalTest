@@ -1,69 +1,58 @@
 /*
  * Copyright (C) 2025 Mobile Porting Team
  *
- * Permission is hereby granted, free of charge, to any person obtaining a
- * copy of this software and associated documentation files (the "Software"),
- * to deal in the Software without restriction, including without limitation
- * the rights to use, copy, modify, merge, publish, distribute, sublicense,
- * and/or sell copies of the Software, and to permit persons to whom the
- * Software is furnished to do so, subject to the following conditions:
- *
- * The above copyright notice and this permission notice shall be included in
- * all copies or substantial portions of the Software.
- *
- * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
- * IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
- * FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
- * AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
- * LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING
- * FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
- * DEALINGS IN THE SOFTWARE.
+ * Internal-only version of StorageUtil for Android/iOS ports using only embedded assets (.apk) by sysource-xyz.
  */
-
 package mobile.funkin.backend.utils;
 
-/**
- * A storage class for mobile.
- * @author Karim Akra and Homura Akemi (HomuHomu833)
- */
+import openfl.utils.Assets;
+import haxe.Json;
+import sys.io.File;
+ 
+using StringTools;
+ 
 class StorageUtil
 {
 	#if sys
 	public static function getStorageDirectory():String
-		return #if android haxe.io.Path.addTrailingSlash(AndroidContext.getExternalFilesDir()) #elseif ios lime.system.System.documentsDirectory #else Sys.getCwd() #end;
-
-	#if android
-	// always force path due to haxe
-	public static function getExternalStorageDirectory():String
-		return '/sdcard/.CodenameEngine/';
-
-	public static function requestPermissions():Void
 	{
-		if (AndroidVersion.SDK_INT >= AndroidVersionCode.TIRAMISU)
-			AndroidPermissions.requestPermissions(['READ_MEDIA_IMAGES', 'READ_MEDIA_VIDEO', 'READ_MEDIA_AUDIO', 'READ_MEDIA_VISUAL_USER_SELECTED']);
-		else
-			AndroidPermissions.requestPermissions(['READ_EXTERNAL_STORAGE', 'WRITE_EXTERNAL_STORAGE']);
-
-		if (!AndroidEnvironment.isExternalStorageManager())
-			AndroidSettings.requestSetting('MANAGE_APP_ALL_FILES_ACCESS_PERMISSION');
-
-		if ((AndroidVersion.SDK_INT >= AndroidVersionCode.TIRAMISU
-			&& !AndroidPermissions.getGrantedPermissions().contains('android.permission.READ_MEDIA_IMAGES'))
-			|| (AndroidVersion.SDK_INT < AndroidVersionCode.TIRAMISU
-				&& !AndroidPermissions.getGrantedPermissions().contains('android.permission.READ_EXTERNAL_STORAGE')))
-			NativeAPI.showMessageBox('Notice!', 'If you accepted the permissions you are all good!' + '\nIf you didn\'t then expect a crash' + '\nPress OK to see what happens');
-
-		try
-		{
-			if (!FileSystem.exists(StorageUtil.getStorageDirectory()))
-				FileSystem.createDirectory(StorageUtil.getStorageDirectory());
-		}
-		catch (e:Dynamic)
-		{
-			NativeAPI.showMessageBox('Error!', 'Please create directory to\n' + StorageUtil.getStorageDirectory() + '\nPress OK to close the game');
-			lime.system.System.exit(1);
-		}
+	// return haxe.io.Path.addTrailingSlash(sys.FileSystem.applicationStorageDirectory());
+		return #if android haxe.io.Path.addTrailingSlash(AndroidContext.getFilesDir()) 
+		       #elseif ios lime.system.System.documentsDirectory 
+		       #else Sys.getCwd() #end;
 	}
-	#end
+
+    public static function exists(path:String):Bool
+    {
+        #if mobile
+        return Assets.exists(path);
+        #else
+        return sys.FileSystem.exists(path);
+        #end
+    }
+ 
+    public static function loadText(path:String):String
+    {
+        #if mobile
+        return Assets.getText(path);
+        #else
+        return sys.io.File.getContent(path);
+        #end
+    }
+ 
+    public static function loadJson<T>(path:String):T
+    {
+        var raw = loadText(path);
+        return Json.parse(raw);
+    }
+ 
+    public static function loadBytes(path:String):haxe.io.Bytes
+    {
+        #if mobile
+        return Assets.getBytes(path);
+        #else
+        return sys.io.File.getBytes(path);
+        #end
+    }
 	#end
 }

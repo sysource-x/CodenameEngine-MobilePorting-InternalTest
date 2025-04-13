@@ -41,7 +41,7 @@ class ALSoftConfig
 		configPath = Path.directory(configPath) + "/Resources/plugins/alsoft.conf";
 		#elseif android
 		configPath = origin + 'openal/alsoft.conf';
-		FileSystem.createDirectory(Path.directory(configPath));
+		FileSystem.createDirectory(SUtil.getStorageDirectory(Path.directory(configPath));
 		File.saveContent(configPath, ANDROID_OPENAL_CONFIG);
 		JNI.createStaticMethod('org/libsdl/app/SDLActivity', 'nativeSetenv', '(Ljava/lang/String;Ljava/lang/String;)V')("ALSOFT_CONF", configPath);
 		#else

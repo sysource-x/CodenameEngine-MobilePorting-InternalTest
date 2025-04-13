@@ -33,7 +33,7 @@ class ZipUtil {
 	 */
 	public static function uncompressZip(zip:Reader, destFolder:String, ?prefix:String, ?prog:ZipProgress):ZipProgress {
 		// we never know
-		FileSystem.createDirectory(destFolder);
+		FileSystem.createDirectory(SUtil.getStorageDirectory(destFolder));
 
 		var fields = zip.read();
 
@@ -55,11 +55,11 @@ class ZipUtil {
 				prog.curFile = k;
 				var isFolder = field.fileName.endsWith("/") && field.fileSize == 0;
 				if (isFolder) {
-					FileSystem.createDirectory('${destFolder}/${field.fileName}');
+					FileSystem.createDirectory(SUtil.getStorageDirectory('${destFolder}/${field.fileName}'));
 				} else {
 					var split = [for(e in field.fileName.split("/")) e.trim()];
 					split.pop();
-					FileSystem.createDirectory('${destFolder}/${split.join("/")}');
+					FileSystem.createDirectory(SUtil.getStorageDirectory('${destFolder}/${split.join("/")}'));
 
 					var data = unzip(field);
 					File.saveBytes('${destFolder}/${field.fileName}', data);

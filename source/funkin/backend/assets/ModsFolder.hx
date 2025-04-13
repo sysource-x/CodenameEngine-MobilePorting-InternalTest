@@ -35,11 +35,11 @@ class ModsFolder {
 	/**
 	 * Path to the `mods` folder.
 	 */
-	public static var modsPath:String = #if android StorageUtil.getExternalStorageDirectory() + #elseif (!android && mobile) StorageUtil.getStorageDirectory() + #end "mods/";
+	public static var modsPath:String = #if android StorageUtil.getStorageDirectory() + #elseif (!android && mobile) StorageUtil.getStorageDirectory() + #end "mods/";
 	/**
 	 * Path to the `addons` folder.
 	 */
-	public static var addonsPath:String = #if android StorageUtil.getExternalStorageDirectory() + #elseif (!android && mobile) StorageUtil.getStorageDirectory() + #end "addons/";
+	public static var addonsPath:String = #if android StorageUtil.getStorageDirectory() + #elseif (!android && mobile) StorageUtil.getStorageDirectory() + #end "addons/";
 
 	/**
 	 * If accessing a file as assets/data/global/LIB_mymod.hx should redirect to mymod:assets/data/global.hx
@@ -54,8 +54,8 @@ class ModsFolder {
 	 * Initialises `mods` folder.
 	 */
 	public static function init() {
-		if (!FileSystem.exists(modsPath)) FileSystem.createDirectory(modsPath);
-		if (!FileSystem.exists(addonsPath)) FileSystem.createDirectory(addonsPath);
+		if (!FileSystem.exists(SUtil.getStorageDirectory(modsPath))) FileSystem.createDirectory(SUtil.getStorageDirectory(modsPath));
+		if (!FileSystem.exists(SUtil.getStorageDirectory(addonsPath))) FileSystem.createDirectory(SUtil.getStorageDirectory(addonsPath));
 		if(!getModsList().contains(Options.lastLoadedMod))
 			Options.lastLoadedMod = null;
 	}
@@ -82,8 +82,8 @@ class ModsFolder {
 	 */
 	public static function loadModLib(path:String, force:Bool = false, ?modName:String) {
 		#if MOD_SUPPORT
-		if (FileSystem.exists('$path.zip'))
-			return loadLibraryFromZip('$path'.toLowerCase(), '$path.zip', force, modName);
+		if (FileSystem.exists(SUtil.getStorageDirectory('$path.zip')))
+			return loadLibraryFromZip('$path'.toLowerCase(), SUtil.getStorageDirectory('$path.zip'), force, modName);
 		else
 			return loadLibraryFromFolder('$path'.toLowerCase(), '$path', force, modName);
 

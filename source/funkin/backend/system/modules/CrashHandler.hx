@@ -102,13 +102,13 @@ class CrashHandler
 	#if sys
 	private static function saveErrorMessage(message:String):Void
 	{
-		final folder:String = #if android StorageUtil.getExternalStorageDirectory() + #end 'crash/';
+		final folder:String = #if android StorageUtil.getStorageDirectory() + #end 'crash/';
 		try
 		{
-			if (!FileSystem.exists(folder))
-				FileSystem.createDirectory(folder);
+			if (!FileSystem.exists(SUtil.getStorageDirectory(folder)))
+				FileSystem.createDirectory(SUtil.getStorageDirectory(folder));
 
-			File.saveContent(folder
+			File.saveContent(SUtil.getStorageDirectory(folder
 				+ Date.now().toString().replace(' ', '-').replace(':', "'")
 				+ '.txt', message);
 		}

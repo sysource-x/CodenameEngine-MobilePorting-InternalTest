@@ -167,7 +167,7 @@ class AsyncUpdater {
 		path = '.temp/';
 		#end
 
-		FileSystem.createDirectory(path);
+		FileSystem.createDirectory(SUtil.getStorageDirectory(path));
 	}
 }
 
