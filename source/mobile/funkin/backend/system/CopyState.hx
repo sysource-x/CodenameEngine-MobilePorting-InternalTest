@@ -123,7 +123,7 @@ class CopyState extends funkin.backend.MusicBeatState
 					NativeAPI.showMessageBox('Failed To Copy ${failedFiles.length} File.', failedFiles.join('\n'), MSG_ERROR);
 					final folder:String = #if android StorageUtil.getStorageDirectory() + #else Sys.getCwd() + #end 'logs/';
 					if (!FileSystem.exists(SUtil.getStorageDirectory(folder))
-						FileSystem.createDirectory(SUtil.getStorageDirectory(folder);
+						FileSystem.createDirectory(SUtil.getStorageDirectory(folder));
 					File.saveContent(SUtil.getStorageDirectory(folder + Date.now().toString().replace(' ', '-').replace(':', "'") + '-CopyState' + '.txt', failedFilesStack.join('\n'));
 				}
 				
