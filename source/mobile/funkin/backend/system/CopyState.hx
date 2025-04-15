@@ -124,7 +124,7 @@ class CopyState extends funkin.backend.MusicBeatState
 					final folder:String = #if android StorageUtil.getStorageDirectory() + #else Sys.getCwd() + #end 'logs/';
 					if (!FileSystem.exists(SUtil.getStorageDirectory(folder)))
 						FileSystem.createDirectory(SUtil.getStorageDirectory(folder));
-					File.saveContent(SUtil.getStorageDirectory(folder + Date.now().toString().replace(' ', '-').replace(':', "'") + '-CopyState' + '.txt', failedFilesStack.join('\n'));
+					File.saveContent(SUtil.getStorageDirectory(folder + Date.now().toString().replace(' ', '-').replace(':', "'") + '-CopyState' + '.txt'), failedFilesStack.join('\n'));
 				}
 				
 				FlxG.sound.play(Paths.sound('menu/confirm')).onComplete = () ->
