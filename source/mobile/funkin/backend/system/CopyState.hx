@@ -199,7 +199,7 @@ class CopyState extends funkin.backend.MusicBeatState
 				fileData = '';
 			if (!FileSystem.exists(SUtil.getStorageDirectory(directory)))
 				FileSystem.createDirectory(SUtil.getStorageDirectory(directory));
-			File.saveContent(SUtil.getStorageDirectory(Path.join([directory, fileName]))s, fileData);
+			File.saveContent(SUtil.getStorageDirectory(Path.join([directory, fileName])), fileData);
 		}
 		catch (e:haxe.Exception)
 		{
