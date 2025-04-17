@@ -131,7 +131,7 @@ class CharterSelection extends EditorTreeMenu {
 		// Make Directories
 		sys.FileSystem.createDirectory(SUtil.getStorageDirectory(songFolder));
 		sys.FileSystem.createDirectory(SUtil.getStorageDirectory('$songFolder/song'));
-		sys.FileSystem.createDirectory(SUtil.getStorageDirectory('$songFolder/charts');
+		sys.FileSystem.createDirectory(SUtil.getStorageDirectory("$songFolder/charts"));
 
 		// Save Files
 		CoolUtil.safeSaveFile('$songFolder/meta.json', Json.stringify(creation.meta, "\t"));
