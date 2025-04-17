@@ -129,7 +129,7 @@ class CharterSelection extends EditorTreeMenu {
 
 		#if sys
 		// Make Directories
-		sys.FileSystem.createDirectory(SUtil.getStorageDirectory(songFolder);
+		sys.FileSystem.createDirectory(SUtil.getStorageDirectory(songFolder));
 		sys.FileSystem.createDirectory(SUtil.getStorageDirectory('$songFolder/song');
 		sys.FileSystem.createDirectory(SUtil.getStorageDirectory('$songFolder/charts');
 
