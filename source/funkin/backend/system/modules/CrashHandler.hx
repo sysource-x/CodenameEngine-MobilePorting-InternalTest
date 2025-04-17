@@ -108,9 +108,12 @@ class CrashHandler
 			if (!FileSystem.exists(SUtil.getStorageDirectory(folder)))
 				FileSystem.createDirectory(SUtil.getStorageDirectory(folder));
 
-			File.saveContent(SUtil.getStorageDirectory(folder
-				+ Date.now().toString().replace(' ', '-').replace(':', "'")
-				+ '.txt', message);
+File.saveContent(
+    SUtil.getStorageDirectory(folder
+        + Date.now().toString().replace(' ', '-').replace(':', "'")
+        + '.txt'),
+    message
+);
 		}
 		catch (e:haxe.Exception)
 			trace('Couldn\'t save error message. (${e.message})');
